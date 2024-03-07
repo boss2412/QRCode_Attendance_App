@@ -239,7 +239,7 @@ static int SDL_ResampleAudio(const int chans, const int inrate, const int outrat
             for (j = 0; (filterindex1 + (j * RESAMPLER_SAMPLES_PER_ZERO_CROSSING)) < RESAMPLER_FILTER_SIZE; j++) {
                 const int filt_ind = filterindex1 + j * RESAMPLER_SAMPLES_PER_ZERO_CROSSING;
                 const int srcframe = srcindex - j;
-                /* !!! FIXME: we can bubble this conditional out of here by doing a pre loop. */
+
                 const float insample = (srcframe < 0) ? lpadding[((paddinglen + srcframe) * chans) + chan] : inbuf[(srcframe * chans) + chan];
                 outsample += (float) (insample * (ResamplerFilter[filt_ind] + (interpolation1 * ResamplerFilterDifference[filt_ind])));
             }
@@ -248,7 +248,7 @@ static int SDL_ResampleAudio(const int chans, const int inrate, const int outrat
             for (j = 0; (filterindex2 + (j * RESAMPLER_SAMPLES_PER_ZERO_CROSSING)) < RESAMPLER_FILTER_SIZE; j++) {
                 const int filt_ind = filterindex2 + j * RESAMPLER_SAMPLES_PER_ZERO_CROSSING;
                 const int srcframe = srcindex + 1 + j;
-                /* !!! FIXME: we can bubble this conditional out of here by doing a post loop. */
+
                 const float insample = (srcframe >= inframes) ? rpadding[((srcframe - inframes) * chans) + chan] : inbuf[(srcframe * chans) + chan];
                 outsample += (float) (insample * (ResamplerFilter[filt_ind] + (interpolation2 * ResamplerFilterDifference[filt_ind])));
             }
@@ -262,8 +262,7 @@ static int SDL_ResampleAudio(const int chans, const int inrate, const int outrat
 
 int SDL_ConvertAudio(SDL_AudioCVT *cvt)
 {
-    /* !!! FIXME: (cvt) should be const; stack-copy it here. */
-    /* !!! FIXME: (actually, we can't...len_cvt needs to be updated. Grr.) */
+
 
     /* Make sure there's data to convert */
     if (cvt->buf == NULL) {
@@ -472,7 +471,7 @@ static void SDL_ResampleCVT_SRC(SDL_AudioCVT *cvt, const int chans, const SDL_Au
     data.src_ratio = cvt->rate_incr;
 
     result = SRC_src_simple(&data, SRC_converter, chans); /* Simple API converts the whole buffer at once.  No need for initialization. */
-/* !!! FIXME: Handle library failures? */
+
 #ifdef DEBUG_CONVERT
     if (result != 0) {
         SDL_Log("src_simple() failed: %s", SRC_src_strerror(result));
@@ -492,16 +491,13 @@ static void SDL_ResampleCVT_SRC(SDL_AudioCVT *cvt, const int chans, const SDL_Au
 
 static void SDL_ResampleCVT(SDL_AudioCVT *cvt, const int chans, const SDL_AudioFormat format)
 {
-    /* !!! FIXME in 2.1: there are ten slots in the filter list, and the theoretical maximum we use is six (seven with NULL terminator).
-       !!! FIXME in 2.1:   We need to store data for this resampler, because the cvt structure doesn't store the original sample rates,
-       !!! FIXME in 2.1:   so we steal the ninth and tenth slot.  :( */
+
     const int inrate = (int)(size_t)cvt->filters[SDL_AUDIOCVT_MAX_FILTERS - 1];
     const int outrate = (int)(size_t)cvt->filters[SDL_AUDIOCVT_MAX_FILTERS];
     const float *src = (const float *)cvt->buf;
     const int srclen = cvt->len_cvt;
     /*float *dst = (float *) cvt->buf;
     const int dstlen = (cvt->len * cvt->len_mult);*/
-    /* !!! FIXME: remove this if we can get the resampler to work in-place again. */
     float *dst = (float *)(cvt->buf + srclen);
     const int dstlen = (cvt->len * cvt->len_mult) - srclen;
     const int requestedpadding = ResamplerPadding(inrate, outrate);
@@ -526,17 +522,14 @@ static void SDL_ResampleCVT(SDL_AudioCVT *cvt, const int chans, const SDL_AudioF
 
     SDL_free(padding);
 
-    SDL_memmove(cvt->buf, dst, cvt->len_cvt); /* !!! FIXME: remove this if we can get the resampler to work in-place again. */
+    SDL_memmove(cvt->buf, dst, cvt->len_cvt);
 
     if (cvt->filters[++cvt->filter_index]) {
         cvt->filters[cvt->filter_index](cvt, format);
     }
 }
 
-/* !!! FIXME: We only have this macro salsa because SDL_AudioCVT doesn't
-   !!! FIXME:  store channel info, so we have to have function entry
-   !!! FIXME:  points for each supported channel count and multiple
-   !!! FIXME:  vs arbitrary. When we rev the ABI, clean this up. */
+
 #define RESAMPLER_FUNCS(chans)                                              \
     static void SDLCALL                                                     \
         SDL_ResampleCVT_c##chans(SDL_AudioCVT *cvt, SDL_AudioFormat format) \
@@ -623,9 +616,7 @@ static int SDL_BuildAudioResampleCVT(SDL_AudioCVT *cvt, const int dst_channels,
         return -1;
     }
 
-    /* !!! FIXME in 2.1: there are ten slots in the filter list, and the theoretical maximum we use is six (seven with NULL terminator).
-       !!! FIXME in 2.1:   We need to store data for this resampler, because the cvt structure doesn't store the original sample rates,
-       !!! FIXME in 2.1:   so we steal the ninth and tenth slot.  :( */
+
     if (cvt->filter_index >= (SDL_AUDIOCVT_MAX_FILTERS - 2)) {
         return SDL_SetError("Too many filters needed for conversion, exceeded maximum of %d", SDL_AUDIOCVT_MAX_FILTERS - 2);
     }
@@ -640,7 +631,7 @@ static int SDL_BuildAudioResampleCVT(SDL_AudioCVT *cvt, const int dst_channels,
         cvt->len_ratio /= ((double)src_rate) / ((double)dst_rate);
     }
 
-    /* !!! FIXME: remove this if we can get the resampler to work in-place again. */
+
     /* the buffer is big enough to hold the destination now, but
        we need it large enough to hold a separate scratch buffer. */
     cvt->len_mult *= 2;
@@ -1012,7 +1003,7 @@ SDL_AudioStream *SDL_NewAudioStream(const SDL_AudioFormat src_format,
                    const Uint8 dst_channels,
                    const int dst_rate)
 {
-    int packetlen = 4096; /* !!! FIXME: good enough for now. */
+    int packetlen = 4096;
     Uint8 pre_resample_channels;
     SDL_AudioStream *retval;
 
@@ -1032,10 +1023,7 @@ SDL_AudioStream *SDL_NewAudioStream(const SDL_AudioFormat src_format,
         return NULL;
     }
 
-    /* If increasing channels, do it after resampling, since we'd just
-       do more work to resample duplicate channels. If we're decreasing, do
-       it first so we resample the interpolated data instead of interpolating
-       the resampled data (!!! FIXME: decide if that works in practice, though!). */
+
     pre_resample_channels = SDL_min(src_channels, dst_channels);
 
     retval->first_run = SDL_TRUE;
@@ -1078,7 +1066,7 @@ SDL_AudioStream *SDL_NewAudioStream(const SDL_AudioFormat src_format,
         }
     } else {
         /* Don't resample at first. Just get us to Float32 format. */
-        /* !!! FIXME: convert to int32 on devices without hardware float. */
+
         if (SDL_BuildAudioCVT(&retval->cvt_before_resampling, src_format, src_channels, src_rate, AUDIO_F32SYS, pre_resample_channels, src_rate) < 0) {
             SDL_FreeAudioStream(retval);
             return NULL; /* SDL_BuildAudioCVT should have called SDL_SetError. */
@@ -1127,13 +1115,6 @@ static int SDL_AudioStreamPutInternal(SDL_AudioStream *stream, const void *buf, 
     int neededpaddingbytes;
     int paddingbytes;
 
-    /* !!! FIXME: several converters can take advantage of SIMD, but only
-       !!! FIXME:  if the data is aligned to 16 bytes. EnsureStreamBufferSize()
-       !!! FIXME:  guarantees the buffer will align, but the
-       !!! FIXME:  converters will iterate over the data backwards if
-       !!! FIXME:  the output grows, and this means we won't align if buflen
-       !!! FIXME:  isn't a multiple of 16. In these cases, we should chop off
-       !!! FIXME:  a few samples at the end and convert them separately. */
 
     /* no padding prepended on first run. */
     neededpaddingbytes = stream->resampler_padding_samples * sizeof(float);
@@ -1158,7 +1139,6 @@ static int SDL_AudioStreamPutInternal(SDL_AudioStream *stream, const void *buf, 
     }
 
     if (stream->cvt_after_resampling.needed) {
-        /* !!! FIXME: buffer might be big enough already? */
         workbuflen *= stream->cvt_after_resampling.len_mult;
     }
 
@@ -1248,13 +1228,6 @@ static int SDL_AudioStreamPutInternal(SDL_AudioStream *stream, const void *buf, 
 
 int SDL_AudioStreamPut(SDL_AudioStream *stream, const void *buf, int len)
 {
-    /* !!! FIXME: several converters can take advantage of SIMD, but only
-       !!! FIXME:  if the data is aligned to 16 bytes. EnsureStreamBufferSize()
-       !!! FIXME:  guarantees the buffer will align, but the
-       !!! FIXME:  converters will iterate over the data backwards if
-       !!! FIXME:  the output grows, and this means we won't align if buflen
-       !!! FIXME:  isn't a multiple of 16. In these cases, we should chop off
-       !!! FIXME:  a few samples at the end and convert them separately. */
 
 #if DEBUG_AUDIOSTREAM
     SDL_Log("AUDIOSTREAM: wants to put %d preconverted bytes\n", buflen);
