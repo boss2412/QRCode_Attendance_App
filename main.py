@@ -6,18 +6,29 @@ from kivy.uix.button import Button
 from Student.student1 import Student1Screen
 from Teacher.teacher1 import Teacher1Screen
 
-Window.clearcolor = 1,1,1,1
+Window.clearcolor = 1, 1, 1, 1
+
+
+def switch_to_teacher1(instance):
+    app = App.get_running_app()
+    app.root.current = 'teacher1'
+
+
+def switch_to_student1(instance):
+    app = App.get_running_app()
+    app.root.current = 'student1'
+
 
 class MainScreen(Screen):
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
         layout = BoxLayout(orientation='vertical')
         self.button1 = Button(
-                             size_hint=(1,1),
-                             background_normal = 'student1.png',
-                             background_down = 'student2.png'
-                            )
-        self.button1.bind(on_release=self.switch_to_student1)
+            size_hint=(1, 1),
+            background_normal='student1.png',
+            background_down='student2.png'
+        )
+        self.button1.bind(on_release=switch_to_student1)
 
         layout.add_widget(self.button1)
 
@@ -26,19 +37,12 @@ class MainScreen(Screen):
             background_normal='teacher1.png',
             background_down='teacher2.png'
         )
-        self.button2.bind(on_release=self.switch_to_teacher1)
+        self.button2.bind(on_release=switch_to_teacher1)
 
         layout.add_widget(self.button2)
 
         self.add_widget(layout)
 
-    def switch_to_student1(self, instance):
-        app = App.get_running_app()
-        app.root.current = 'student1'
-
-    def switch_to_teacher1(self, instance):
-        app = App.get_running_app()
-        app.root.current = 'teacher1'
 
 class MyApp(App):
     def build(self):
@@ -46,10 +50,8 @@ class MyApp(App):
         sm.add_widget(MainScreen(name='main'))
         sm.add_widget(Student1Screen(name='student1'))
         sm.add_widget(Teacher1Screen(name='teacher1'))
-
         return sm
 
 
 if __name__ == '__main__':
     MyApp().run()
-
