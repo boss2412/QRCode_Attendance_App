@@ -1,0 +1,21 @@
+<StudentRegisterScreen>:
+    BoxLayout:
+        orientation: 'vertical'
+        spacing: '12dp'
+        padding: '12dp'
+        MDLabel:
+            text: "Student Register"
+            halign: 'center'
+        MDTextField:
+            hint_text: "Name"
+            id: name_input
+        MDTextField:
+            hint_text: "Email"
+            id: email_input
+        MDTextField:
+            hint_text: "Password"
+            password: True
+            id: password_input
+        MDRaisedButton:
+            text: "Register"
+            on_release: print("Student Register", name_input.text, email_input.text, password_input.text)

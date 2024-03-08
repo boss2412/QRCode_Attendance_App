@@ -1,0 +1,21 @@
+<TeacherLoginRegister>:
+    BoxLayout:
+        orientation: 'vertical'
+        spacing: '12dp'
+        padding: '12dp'
+        MDLabel:
+            text: "Teacher Login/Register"
+            halign: 'center'
+        MDTextField:
+            hint_text: "Email"
+            id: email_input
+        MDTextField:
+            hint_text: "Password"
+            password: True
+            id: password_input
+        MDRaisedButton:
+            text: "Login"
+            on_release: print("Teacher Login", email_input.text, password_input.text)
+        MDFlatButton:
+            text: "Register"
+            on_release: root.manager.current = 'register_screen'

@@ -1,0 +1,42 @@
+ScreenManager:
+    id: screen_manager
+
+    LoginScreen:
+        name: 'login'
+        MDBoxLayout:
+            orientation: 'vertical'
+            spacing: '12dp'
+            padding: '12dp'
+            MDTextField:
+                id: login_email
+                hint_text: "Email"
+            MDTextField:
+                id: login_password
+                hint_text: "Password"
+                password: True
+            MDRaisedButton:
+                text: "Login"
+                on_release: app.validate_login(login_email.text, login_password.text)
+            MDFlatButton:
+                text: "Register"
+                on_release: screen_manager.current = 'register'
+
+    RegisterScreen:
+        name: 'register'
+        MDBoxLayout:
+            orientation: 'vertical'
+            spacing: '12dp'
+            padding: '12dp'
+            MDTextField:
+                id: register_email
+                hint_text: "Email"
+            MDTextField:
+                id: register_password
+                hint_text: "Password"
+                password: True
+            MDRaisedButton:
+                text: "Register"
+                on_release: app.validate_register(register_email.text, register_password.text)
+            MDFlatButton:
+                text: "Back to Login"
+                on_release: screen_manager.current = 'login'

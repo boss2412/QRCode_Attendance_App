@@ -1,0 +1,60 @@
+<WelcomeScreen>:
+    FloatLayout:
+        size: root.size
+        pos: root.pos
+
+        Image:
+            source: "assets/back3.png"
+            size_hint: 1, 1
+            pos_hint: {'center_x': 0.5, 'center_y': 0.5}
+
+        MDLabel:
+            text: "W e l c o m e !"
+            font_name: "BPoppins"
+            font_size: "26sp"
+            pos_hint: {'center_x': 0.755, 'center_y': 0.85}
+            color: rgba(0, 0, 59, 255)
+
+
+
+        MDLabel:
+            text: "To PVPPCOE's Attendance App"
+            font_name: "MPoppins"
+            font_size: "18sp"
+            pos_hint: {'center_x': 0.6, 'center_y': 0.79}
+            color: rgba(135, 133, 193, 255)
+
+        MDRaisedButton:
+            text: "STUDENT"
+            font_name: "BPoppins"
+            font_size: "23sp"
+            #text_color: rgba(90, 34, 139, 255)
+            pos_hint: {'center_x': 0.5, 'y': 0.2}
+            size_hint: 0.50, 0.05
+            md_bg_color: rgba(159, 90, 253, 255)
+            on_release: root.manager.current = 'student_login_register'
+            canvas.before:
+                Color:
+                    rgb: rgba(52, 0, 231, 255)
+                RoundedRectangle:
+                    size: self.size
+                    pos: self.pos
+                    radius: [5]
+
+        MDRaisedButton:
+            text: "TEACHER"
+            font_name: "BPoppins"
+            font_size: "23sp"
+            #text_color: rgba(90, 34, 139, 255)
+            pos_hint: {'center_x': 0.5, 'y': 0.1}
+            size_hint: 0.50, 0.05
+            md_bg_color: rgba(159, 90, 253, 255)
+            on_release: root.manager.current = 'teacher_login_register'
+            canvas.before:
+                Color:
+                    rgb: rgba(52, 0, 231, 255)
+                RoundedRectangle:
+                    size: self.size
+                    pos: self.pos
+                    radius: [5]
+

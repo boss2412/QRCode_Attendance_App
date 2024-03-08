@@ -1,0 +1,24 @@
+<RegisterScreen>:
+    BoxLayout:
+        orientation: 'vertical'
+        spacing: '12dp'
+        padding: '12dp'
+        MDLabel:
+            text: "Register"
+            halign: 'center'
+        MDTextField:
+            hint_text: "Name"
+            id: name_input
+        MDTextField:
+            hint_text: "Email"
+            id: email_input
+        MDTextField:
+            hint_text: "Password"
+            password: True
+            id: password_input
+        MDTextField:
+            hint_text: "Subject"
+            id: subject_input
+        MDRaisedButton:
+            text: "Register"
+            on_release: print("Register", name_input.text, email_input.text, password_input.text, subject_input.text)
