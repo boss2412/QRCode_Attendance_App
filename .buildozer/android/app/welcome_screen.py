@@ -1,4 +1,5 @@
 from kivy.uix.screenmanager import Screen
 
-class RegisterScreen(Screen):
+
+class WelcomeScreen(Screen):
     pass

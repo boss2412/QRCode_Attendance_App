@@ -1,10 +1,8 @@
-
 from kivy.uix.screenmanager import Screen
 import mysql.connector
 
 
-
-def insert_student_data(self, name_input, id_input, email_input, password_input):
+def insert_teacher_data(self, name_input, id_input, subject_input, email_input, password_input):
     # Database connection parameters
     cnx = mysql.connector.Connect(
         host="localhost",
@@ -15,8 +13,8 @@ def insert_student_data(self, name_input, id_input, email_input, password_input)
     cursor = cnx.cursor()
 
     # Insert data into the database
-    query = "INSERT INTO student (name, college_id, email, password) VALUES (%s, %s, %s, %s)"
-    values = (name_input, id_input, email_input, password_input)
+    query = "INSERT INTO teacher (name, college_id, subject, email, password) VALUES (%s, %s, %s, %s, %s)"
+    values = (name_input, id_input, subject_input, email_input, password_input)
     cursor.execute(query, values)
 
     # Commit the transaction
@@ -26,8 +24,5 @@ def insert_student_data(self, name_input, id_input, email_input, password_input)
     cursor.close()
     cnx.close()
 
-
-
-
-class StudentRegister(Screen):
+class TeacherRegister(Screen):
     pass

@@ -1,5 +1,4 @@
 from kivy.uix.screenmanager import Screen
 
-
-class TeacherLoginRegister(Screen):
+class TeacherRegister(Screen):
     pass

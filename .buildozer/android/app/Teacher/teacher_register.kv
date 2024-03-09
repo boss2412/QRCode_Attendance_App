@@ -1,5 +1,5 @@
-<StudentLogin>:
-    MDFloatLayout:
+<TeacherRegister>:
+    FloatLayout:
         size: root.size
         pos: root.pos
 
@@ -9,33 +9,45 @@
             user_font_size: "30sp"
 
             text_color: rgba(26, 24, 58, 255)
-            on_release:root.manager.current = 'welcome'
+            on_release:root.manager.current = 'teacher_login'
 
         MDLabel:
-            text: "Login to Continue"
+            text: "Register"
             font_name: "BPoppins"
             font_size: "26sp"
-            pos_hint: {'center_x': 0.675, 'center_y': 0.8}
+            pos_hint: {'center_x': 0.85, 'center_y': 0.8}
             color: rgba(0, 0, 59, 255)
+
+        MDTextField:
+            hint_text: "Name"
+            id: name_input
+            pos_hint: {'center_x': 0.5, 'center_y': 0.7}
+            size_hint: 0.8, 0.1
 
         MDTextField:
             hint_text: "Email"
             id: email_input
-            pos_hint: {'center_x': 0.5, 'center_y': 0.6}
+            pos_hint: {'center_x': 0.5, 'center_y': 0.5}
             size_hint: 0.8, 0.1
 
         MDTextField:
             hint_text: "Password"
             password: True
             id: password_input
-            pos_hint: {'center_x': 0.5, 'center_y': 0.5}
+            pos_hint: {'center_x': 0.5, 'center_y': 0.4}
+            size_hint: 0.8, 0.1
+
+        MDTextField:
+            hint_text: "Subject"
+            id: subject_input
+            pos_hint: {'center_x': 0.5, 'center_y': 0.6}
             size_hint: 0.8, 0.1
 
         MDRaisedButton:
-            text: "Login"
+            text: "Register"
             font_name: "BPoppins"
             font_size: "23sp"
-            pos_hint: {'center_x': 0.5, 'center_y': 0.3}
+            pos_hint: {'center_x': 0.5, 'center_y': 0.2}
             size_hint: 0.5, 0.05
             md_bg_color: rgba(159, 90, 253, 255)
             on_release: print("Login", email_input.text, password_input.text)
@@ -47,8 +59,4 @@
                     pos: self.pos
                     radius: [5]
 
-        MDFlatButton:
-            text: "Don't have an account?  Register"
-            pos_hint: {'center_x': 0.5, 'center_y': 0.2}
-            size_hint: 0.5, 0.05
-            on_release: root.manager.current = 'student_register'
+
