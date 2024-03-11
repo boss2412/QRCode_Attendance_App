@@ -1,0 +1,26 @@
+<StudentDashboard>:
+    MDFloatLayout:
+        size: root.size
+        pos: root.pos
+
+
+        ScrollView:
+
+            MDList:
+                id: user_data_list
+
+        MDRaisedButton:
+            text: "Log Out"
+            font_name: "BPoppins"
+            font_size: "23sp"
+            pos_hint: {'center_x': 0.5, 'center_y': 0.2}
+            size_hint: 0.5, 0.05
+            md_bg_color: rgba(159, 90, 253, 255)
+            on_release: app.logout()
+            canvas.before:
+                Color:
+                    rgb: rgba(52, 0, 231, 255)
+                RoundedRectangle:
+                    size: self.size
+                    pos: self.pos
+                    radius: [5]

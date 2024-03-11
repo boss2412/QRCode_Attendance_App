@@ -2,9 +2,10 @@ import qrcode
 from kivy.lang import Builder
 from kivymd.app import MDApp
 from kivy.uix.screenmanager import ScreenManager
+from kivymd.uix.list import TwoLineListItem
 from qrcode.main import QRCode
-
-from Student.student_login import StudentLogin
+from Student.student_dashboard import StudentDashboard
+from Student.student_login import StudentLogin, login
 from Teacher.teacher_register import TeacherRegister
 from Student.student_register import StudentRegister, insert_student_data, generate_qr_code
 from Teacher.teacher_login import TeacherLogin
@@ -13,7 +14,7 @@ from kivy.core.window import Window
 from kivy.core.text import LabelBase
 import mysql.connector
 import os
-
+from kivy.uix.image import Image
 
 # To get output that would appear on mobile
 Window.size = (360, 640)
@@ -29,8 +30,6 @@ LabelBase.register(name="BPoppins", fn_regular="C:/Users/anura/PycharmProjects/M
 
 
 class MainApp(MDApp):
-    # def __init__(self, **kwargs):
-    #     super().__init__(**kwargs)
 
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
@@ -43,6 +42,7 @@ class MainApp(MDApp):
         Builder.load_file('Teacher/teacher_login.kv')
         Builder.load_file('Teacher/teacher_register.kv')
         Builder.load_file('Student/student_register.kv')
+        Builder.load_file('Student/student_dashboard.kv')
 
         # Initialize the ScreenManager
         self.sm = ScreenManager()
@@ -51,16 +51,18 @@ class MainApp(MDApp):
         self.sm.add_widget(TeacherLogin(name='teacher_login'))
         self.sm.add_widget(TeacherRegister(name='teacher_register'))
         self.sm.add_widget(StudentRegister(name='student_register'))
+        self.sm.add_widget(StudentDashboard(name='student_dashboard'))
+
         return self.sm
 
     def insert_student_data(self, name_input, id_input, email_input, password_input):
         # Database connection parameters
         cnx = mysql.connector.Connect(
-                    host="localhost",
-                    user="root",
-                    passwd="boss2412",
-                    database="attendanceapp"
-                )
+            host="localhost",
+            user="root",
+            passwd="boss2412",
+            database="attendanceapp"
+        )
         cursor = cnx.cursor()
 
         # Insert data into the database
@@ -68,7 +70,7 @@ class MainApp(MDApp):
         values = (name_input, id_input, email_input, password_input)
         cursor.execute(query, values)
 
-        # Commit the transaction
+        # Commit transaction
         cnx.commit()
 
         # Close the cursor and connection
@@ -100,7 +102,6 @@ class MainApp(MDApp):
 
         print(f"QR code saved to {img_path}")
 
-
     def insert_teacher_data(self, name_input, id_input, subject_input, email_input, password_input):
         # Database connection parameters
         cnx = mysql.connector.Connect(
@@ -122,6 +123,38 @@ class MainApp(MDApp):
         # Close the cursor and connection
         cursor.close()
         cnx.close()
+
+    def login_user(self, email, password):
+        user_data = login(email, password)
+        if user_data:
+            print("Login successful")
+            self.sm.current = 'student_dashboard'
+            self.populate_dashboard(user_data)
+            with open('login_state.txt', 'w') as file:
+                file.write('Logged in')
+        else:
+            print("Login failed")
+
+    def populate_dashboard(self, user_data):
+        dashboard_screen = self.sm.get_screen('student_dashboard')
+        user_data_list = dashboard_screen.ids.user_data_list
+        user_data_list.clear_widgets()
+        for column_name, value in user_data.items():
+            if column_name != 'password':
+                user_data_list.add_widget(
+                    TwoLineListItem(text=column_name, secondary_text=str(value))
+                )
+        if 'college_id' in user_data:
+            image_path = f"assets/{user_data['college_id']}.png"
+            image = Image(source=image_path, size_hint=(None, None), size=(300, 300))
+            image.pos_hint = {'center_x': 0.5, 'center_y': 0.5}
+            user_data_list.add_widget(image)
+
+    def logout(self):
+        if os.path.exists('login_state.txt'):
+            os.remove('login_state.txt')
+        self.sm.current = 'welcome'
+
 
 if __name__ == '__main__':
     MainApp().run()
