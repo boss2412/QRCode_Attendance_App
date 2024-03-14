@@ -7,7 +7,6 @@ import pandas as pd
 
 scan_flag = True
 
-
 def scan_qr_code():
     cap = cv2.VideoCapture(0)
 
@@ -53,7 +52,6 @@ def insert_into_db(name, college_id, email):
             cursor.close()
             connection.close()
 
-attendance_file_counter = 0
 
 def xlsx():
     global attendance_file_counter
@@ -74,8 +72,6 @@ def xlsx():
     # Close the MySQL connection
     conn.close()
 
-    # Increment the counter
-    attendance_file_counter += 1
 
     # Write DataFrame to Excel file
     output_file = f"attendance{attendance_file_counter}.xlsx"
