@@ -19,32 +19,45 @@
             color: rgba(0, 0, 59, 255)
 
         MDTextField:
-            hint_text: "Name"
             id: name_input
+            hint_text: "Name"
             pos_hint: {'center_x': 0.5, 'center_y': 0.7}
             size_hint: 0.8, 0.1
 
+
         MDTextField:
-            hint_text: "Email"
-            id: email_input
+            id:id_input
+            hint_text: "College-ID"
             pos_hint: {'center_x': 0.5, 'center_y': 0.6}
             size_hint: 0.8, 0.1
 
+
+
         MDTextField:
-            hint_text: "Password"
-            password: True
-            id: password_input
+            id: email_input
+            hint_text: "Email"
             pos_hint: {'center_x': 0.5, 'center_y': 0.5}
             size_hint: 0.8, 0.1
+
+
+        MDTextField:
+            id: password_input
+            hint_text: "Password"
+            password: True
+            pos_hint: {'center_x': 0.5, 'center_y': 0.4}
+            size_hint: 0.8, 0.1
+
 
         MDRaisedButton:
             text: "Register"
             font_name: "BPoppins"
             font_size: "23sp"
-            pos_hint: {'center_x': 0.5, 'center_y': 0.3}
+            pos_hint: {'center_x': 0.5, 'center_y': 0.2}
             size_hint: 0.5, 0.05
             md_bg_color: rgba(159, 90, 253, 255)
-            on_release: print("Login", email_input.text, password_input.text)
+            on_release: app.insert_student_data(name_input.text, id_input.text, email_input.text, password_input.text)
+            on_release: app.generate_qr_code(name_input.text, id_input.text, email_input.text)
+            on_release:root.manager.current = 'student_login'
             canvas.before:
                 Color:
                     rgb: rgba(52, 0, 231, 255)

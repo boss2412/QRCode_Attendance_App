@@ -53,10 +53,8 @@ def insert_into_db(name, college_id, email):
             cursor.close()
             connection.close()
 
-attendance_file_counter = 0
 
 def xlsx():
-    global attendance_file_counter
     # Connect to MySQL database
     conn = mysql.connector.connect(
         host="localhost",
@@ -74,11 +72,8 @@ def xlsx():
     # Close the MySQL connection
     conn.close()
 
-    # Increment the counter
-    attendance_file_counter += 1
-
     # Write DataFrame to Excel file
-    output_file = f"attendance{attendance_file_counter}.xlsx"
+    output_file = "attendance.xlsx"
     df.to_excel(output_file, index=False)
 
     print(f"Data has been exported to {output_file}")

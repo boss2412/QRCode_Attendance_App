@@ -195,7 +195,9 @@ class MainApp(MDApp):
                 cursor.close()
                 connection.close()
 
+    attendance_file_counter = 0
     def xlsx(self):
+        global attendance_file_counter
         # Connect to MySQL database
         conn = mysql.connector.connect(
             host="localhost",
@@ -213,8 +215,10 @@ class MainApp(MDApp):
         # Close the MySQL connection
         conn.close()
 
+        self.attendance_file_counter += 1
+
         # Write DataFrame to Excel file
-        output_file = "attendance.xlsx"
+        output_file = f"attendance{self.attendance_file_counter}.xlsx"
         df.to_excel(output_file, index=False)
 
         print(f"Data has been exported to {output_file}")

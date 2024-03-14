@@ -38,7 +38,7 @@
             pos_hint: {'center_x': 0.5, 'center_y': 0.3}
             size_hint: 0.5, 0.05
             md_bg_color: rgba(159, 90, 253, 255)
-            on_release: print("Login", email_input.text, password_input.text)
+            on_release: app.login_teacher(email_input.text, password_input.text)
             canvas.before:
                 Color:
                     rgb: rgba(52, 0, 231, 255)

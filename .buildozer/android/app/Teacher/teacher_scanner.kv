@@ -1,0 +1,52 @@
+<TeacherScanner>:
+    MDFloatLayout:
+        size: root.size
+        pos: root.pos
+
+        MDRaisedButton:
+            text: "Scan"
+            font_name: "BPoppins"
+            font_size: "26sp"
+            pos_hint: {'center_x': 0.5, 'center_y': 0.7}
+            size_hint: 0.5, 0.05
+            md_bg_color: rgba(159, 90, 253, 255)
+            on_release: app.scan_qr_code()
+            canvas.before:
+                Color:
+                    rgb: rgba(52, 0, 231, 255)
+                RoundedRectangle:
+                    size: self.size
+                    pos: self.pos
+                    radius: [5]
+
+        MDRaisedButton:
+            text: "Excel"
+            font_name: "BPoppins"
+            font_size: "26sp"
+            pos_hint: {'center_x': 0.5, 'center_y': 0.5}
+            size_hint: 0.5, 0.05
+            md_bg_color: rgba(159, 90, 253, 255)
+            on_release: app.xlsx()
+            canvas.before:
+                Color:
+                    rgb: rgba(52, 0, 231, 255)
+                RoundedRectangle:
+                    size: self.size
+                    pos: self.pos
+                    radius: [5]
+
+        MDRaisedButton:
+            text: "Log Out"
+            font_name: "BPoppins"
+            font_size: "26sp"
+            pos_hint: {'center_x': 0.5, 'center_y': 0.3}
+            size_hint: 0.5, 0.05
+            md_bg_color: rgba(159, 90, 253, 255)
+            on_release: app.logout1()
+            canvas.before:
+                Color:
+                    rgb: rgba(52, 0, 231, 255)
+                RoundedRectangle:
+                    size: self.size
+                    pos: self.pos
+                    radius: [5]
