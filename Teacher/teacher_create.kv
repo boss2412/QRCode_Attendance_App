@@ -1,0 +1,52 @@
+<TeacherCreate>:
+    MDFloatLayout:
+        size: root.size
+        pos: root.pos
+
+        MDLabel:
+            text: "Click on 'Create Class' "
+            font_name: "BPoppins"
+            font_size: "26sp"
+            pos_hint: {'center_x': 0.6, 'center_y': 0.75}
+            color: rgba(0, 0, 59, 255)
+
+        MDLabel:
+            text: "to access QR Scanner "
+            font_name: "BPoppins"
+            font_size: "26sp"
+            pos_hint: {'center_x': 0.6, 'center_y': 0.7}
+            color: rgba(0, 0, 59, 255)
+
+
+
+        MDRaisedButton:
+            text: "Create Class"
+            font_name: "BPoppins"
+            font_size: "26sp"
+            pos_hint: {'center_x': 0.5, 'center_y': 0.3}
+            size_hint: 0.5, 0.05
+            md_bg_color: rgba(159, 90, 253, 255)
+            on_release: app.go_to_teacher_scanner_screen()
+            canvas.before:
+                Color:
+                    rgb: rgba(52, 0, 231, 255)
+                RoundedRectangle:
+                    size: self.size
+                    pos: self.pos
+                    radius: [5]
+
+        MDRaisedButton:
+            text: "Log Out"
+            font_name: "BPoppins"
+            font_size: "26sp"
+            pos_hint: {'center_x': 0.5, 'center_y': 0.2}
+            size_hint: 0.5, 0.05
+            md_bg_color: rgba(159, 90, 253, 255)
+            on_release: app.logout1()
+            canvas.before:
+                Color:
+                    rgb: rgba(52, 0, 231, 255)
+                RoundedRectangle:
+                    size: self.size
+                    pos: self.pos
+                    radius: [5]

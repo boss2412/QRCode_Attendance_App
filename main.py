@@ -6,15 +6,18 @@ from kivymd.uix.list import TwoLineListItem
 from qrcode.main import QRCode
 from Student.student_dashboard import StudentDashboard
 from Student.student_login import StudentLogin, login
+from Teacher.teacher_create import TeacherCreate
 from Teacher.teacher_register import TeacherRegister
 from Student.student_register import StudentRegister, insert_student_data, generate_qr_code
-from Teacher.teacher_login import TeacherLogin
+from Teacher.teacher_login import TeacherLogin, login1
+from Teacher.teacher_scanner import TeacherScanner
 from welcome_screen import WelcomeScreen
 from kivy.core.window import Window
 from kivy.core.text import LabelBase
 import mysql.connector
 import os
 from kivy.uix.image import Image
+from datetime import datetime
 
 # To get output that would appear on mobile
 Window.size = (360, 640)
@@ -38,20 +41,37 @@ class MainApp(MDApp):
     def build(self):
         # Load the KV files
         Builder.load_file('welcome_screen.kv')
-        Builder.load_file('Student/student_login.kv')
-        Builder.load_file('Teacher/teacher_login.kv')
-        Builder.load_file('Teacher/teacher_register.kv')
         Builder.load_file('Student/student_register.kv')
+        Builder.load_file('Student/student_login.kv')
         Builder.load_file('Student/student_dashboard.kv')
+        Builder.load_file('Teacher/teacher_register.kv')
+        Builder.load_file('Teacher/teacher_login.kv')
+        Builder.load_file('Teacher/teacher_create.kv')
+        Builder.load_file('Teacher/teacher_scanner.kv')
 
         # Initialize the ScreenManager
         self.sm = ScreenManager()
         self.sm.add_widget(WelcomeScreen(name='welcome'))
-        self.sm.add_widget(StudentLogin(name='student_login'))
-        self.sm.add_widget(TeacherLogin(name='teacher_login'))
-        self.sm.add_widget(TeacherRegister(name='teacher_register'))
         self.sm.add_widget(StudentRegister(name='student_register'))
+        self.sm.add_widget(StudentLogin(name='student_login'))
         self.sm.add_widget(StudentDashboard(name='student_dashboard'))
+        self.sm.add_widget(TeacherRegister(name='teacher_register'))
+        self.sm.add_widget(TeacherLogin(name='teacher_login'))
+        self.sm.add_widget(TeacherCreate(name='teacher_create'))
+        self.sm.add_widget(TeacherScanner(name='teacher_scanner'))
+
+
+        # if os.path.exists('login_state.txt'):
+        #     self.sm.current = 'student_dashboard'
+        #
+        # else:
+        #     self.sm.current = 'welcome'
+
+        if os.path.exists('login_teacher.txt'):
+            self.sm.current = 'teacher_create'
+
+        else:
+            self.sm.current = 'welcome'
 
         return self.sm
 
@@ -124,6 +144,9 @@ class MainApp(MDApp):
         cursor.close()
         cnx.close()
 
+    def go_to_teacher_scanner_screen(self):
+        self.sm.current = 'teacher_scanner'
+
     def login_user(self, email, password):
         user_data = login(email, password)
         if user_data:
@@ -135,7 +158,18 @@ class MainApp(MDApp):
         else:
             print("Login failed")
 
+    def login_teacher(self, email, password):
+        user_data = login1(email, password)
+        if user_data:
+            print("Login successful")
+            self.sm.current = 'teacher_create'
+            with open('login_teacher.txt', 'w') as file:
+                file.write('Logged in')
+        else:
+            print("Login failed")
+
     def populate_dashboard(self, user_data):
+
         dashboard_screen = self.sm.get_screen('student_dashboard')
         user_data_list = dashboard_screen.ids.user_data_list
         user_data_list.clear_widgets()
@@ -153,6 +187,11 @@ class MainApp(MDApp):
     def logout(self):
         if os.path.exists('login_state.txt'):
             os.remove('login_state.txt')
+        self.sm.current = 'welcome'
+
+    def logout1(self):
+        if os.path.exists('login_teacher.txt'):
+            os.remove('login_teacher.txt')
         self.sm.current = 'welcome'
 
 
