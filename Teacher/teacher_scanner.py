@@ -2,14 +2,16 @@ from kivy.uix.screenmanager import Screen
 import cv2
 from pyzbar.pyzbar import decode
 import mysql.connector
-from openpyxl import Workbook
 import pandas as pd
+
+
+scan_flag = True
 
 
 def scan_qr_code():
     cap = cv2.VideoCapture(0)
 
-    while True:
+    while scan_flag :
         ret, frame = cap.read()
         decoded_objects = decode(frame)
 
@@ -23,12 +25,10 @@ def scan_qr_code():
         cv2.imshow('QR Code Scanner', frame)
 
         if cv2.waitKey(1) & 0xFF == ord('q'):
-            print("Stopping scanner...")
             break
 
     cap.release()
     cv2.destroyAllWindows()
-
 
 def insert_into_db(name, college_id, email):
     try:

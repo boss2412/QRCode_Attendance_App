@@ -1,14 +1,14 @@
+import threading
+
 import pandas as pd
 import qrcode
 from kivy.lang import Builder
 from kivymd.app import MDApp
 from kivy.uix.screenmanager import ScreenManager
 from kivymd.uix.list import TwoLineListItem
-from openpyxl.workbook import Workbook
 from qrcode.main import QRCode
 from Student.student_dashboard import StudentDashboard
 from Student.student_login import StudentLogin, login
-from Teacher.teacher_create import TeacherCreate
 from Teacher.teacher_register import TeacherRegister
 from Student.student_register import StudentRegister, insert_student_data, generate_qr_code
 from Teacher.teacher_login import TeacherLogin, login1
@@ -21,7 +21,7 @@ import os
 from kivy.uix.image import Image
 import cv2
 from pyzbar.pyzbar import decode
-
+import time
 
 # To get output that would appear on mobile
 Window.size = (360, 640)
@@ -50,7 +50,6 @@ class MainApp(MDApp):
         Builder.load_file('Student/student_dashboard.kv')
         Builder.load_file('Teacher/teacher_register.kv')
         Builder.load_file('Teacher/teacher_login.kv')
-        Builder.load_file('Teacher/teacher_create.kv')
         Builder.load_file('Teacher/teacher_scanner.kv')
 
         # Initialize the ScreenManager
@@ -61,9 +60,7 @@ class MainApp(MDApp):
         self.sm.add_widget(StudentDashboard(name='student_dashboard'))
         self.sm.add_widget(TeacherRegister(name='teacher_register'))
         self.sm.add_widget(TeacherLogin(name='teacher_login'))
-        self.sm.add_widget(TeacherCreate(name='teacher_create'))
         self.sm.add_widget(TeacherScanner(name='teacher_scanner'))
-
 
         # if os.path.exists('login_state.txt'):
         #     self.sm.current = 'student_dashboard'
@@ -72,7 +69,7 @@ class MainApp(MDApp):
         #     self.sm.current = 'welcome'
 
         if os.path.exists('login_teacher.txt'):
-            self.sm.current = 'teacher_create'
+            self.sm.current = 'teacher_scanner'
 
         else:
             self.sm.current = 'welcome'
@@ -151,10 +148,12 @@ class MainApp(MDApp):
     def go_to_teacher_scanner_screen(self):
         self.sm.current = 'teacher_scanner'
 
-    def scan_qr_code(self):
-        cap = cv2.VideoCapture(0)  # Use 0 for the default camera
+    scan_flag = True
 
-        while True:
+    def scan_qr_code(self):
+        cap = cv2.VideoCapture(0)
+
+        while self.scan_flag:
             ret, frame = cap.read()
             decoded_objects = decode(frame)
 
@@ -165,6 +164,7 @@ class MainApp(MDApp):
                 name, college_id, email = data.split(',')
                 insert_into_db(name, college_id, email)
 
+            cv2.imshow('QR Code Scanner', frame)
 
             if cv2.waitKey(1) & 0xFF == ord('q'):
                 break
@@ -234,13 +234,11 @@ class MainApp(MDApp):
         user_data = login1(email, password)
         if user_data:
             print("Login successful")
-            self.sm.current = 'teacher_create'
+            self.sm.current = 'teacher_scanner'
             with open('login_teacher.txt', 'w') as file:
                 file.write('Logged in')
         else:
             print("Login failed")
-
-
 
     def populate_dashboard(self, user_data):
 
