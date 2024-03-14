@@ -1,8 +1,10 @@
+import pandas as pd
 import qrcode
 from kivy.lang import Builder
 from kivymd.app import MDApp
 from kivy.uix.screenmanager import ScreenManager
 from kivymd.uix.list import TwoLineListItem
+from openpyxl.workbook import Workbook
 from qrcode.main import QRCode
 from Student.student_dashboard import StudentDashboard
 from Student.student_login import StudentLogin, login
@@ -10,14 +12,16 @@ from Teacher.teacher_create import TeacherCreate
 from Teacher.teacher_register import TeacherRegister
 from Student.student_register import StudentRegister, insert_student_data, generate_qr_code
 from Teacher.teacher_login import TeacherLogin, login1
-from Teacher.teacher_scanner import TeacherScanner
+from Teacher.teacher_scanner import TeacherScanner, scan_qr_code, insert_into_db, xlsx
 from welcome_screen import WelcomeScreen
 from kivy.core.window import Window
 from kivy.core.text import LabelBase
 import mysql.connector
 import os
 from kivy.uix.image import Image
-from datetime import datetime
+import cv2
+from pyzbar.pyzbar import decode
+
 
 # To get output that would appear on mobile
 Window.size = (360, 640)
@@ -147,6 +151,74 @@ class MainApp(MDApp):
     def go_to_teacher_scanner_screen(self):
         self.sm.current = 'teacher_scanner'
 
+    def scan_qr_code(self):
+        cap = cv2.VideoCapture(0)  # Use 0 for the default camera
+
+        while True:
+            ret, frame = cap.read()
+            decoded_objects = decode(frame)
+
+            for obj in decoded_objects:
+                data = obj.data.decode("utf-8")
+                print("QR Code Data:", data)
+                # Assuming data is in the format "name,college_id,email"
+                name, college_id, email = data.split(',')
+                insert_into_db(name, college_id, email)
+
+
+            if cv2.waitKey(1) & 0xFF == ord('q'):
+                break
+
+        cap.release()
+        cv2.destroyAllWindows()
+
+    def insert_into_db(name, college_id, email):
+        try:
+            connection = mysql.connector.connect(
+                host='localhost',
+                database='attendanceapp',
+                user='root',
+                password='boss2412'
+            )
+
+            cursor = connection.cursor()
+            query = "INSERT IGNORE INTO attendance (name, college_id, email) VALUES (%s, %s, %s)"
+            cursor.execute(query, (name, college_id, email))
+            connection.commit()
+            print("Data inserted successfully")
+
+        except mysql.connector.Error as error:
+            print("Failed to insert data into MySQL table {}".format(error))
+
+        finally:
+            if connection.is_connected():
+                cursor.close()
+                connection.close()
+
+    def xlsx(self):
+        # Connect to MySQL database
+        conn = mysql.connector.connect(
+            host="localhost",
+            user="root",
+            password="boss2412",
+            database="attendanceapp"
+        )
+
+        # Query to select data from MySQL table
+        query = "SELECT * FROM attendance"
+
+        # Execute query and fetch data into a pandas DataFrame
+        df = pd.read_sql(query, conn)
+
+        # Close the MySQL connection
+        conn.close()
+
+        # Write DataFrame to Excel file
+        output_file = "attendance.xlsx"
+        df.to_excel(output_file, index=False)
+
+        print(f"Data has been exported to {output_file}")
+
     def login_user(self, email, password):
         user_data = login(email, password)
         if user_data:
@@ -167,6 +239,8 @@ class MainApp(MDApp):
                 file.write('Logged in')
         else:
             print("Login failed")
+
+
 
     def populate_dashboard(self, user_data):
 

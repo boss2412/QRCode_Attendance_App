@@ -3,32 +3,30 @@
         size: root.size
         pos: root.pos
 
-        MDTextField:
-            hint_text: "Lecture Name"
-            id: lecture_input
-            pos_hint: {'center_x': 0.5, 'center_y': 0.7}
-            size_hint: 0.8, 0.1
-
-        MDTextField:
-            hint_text: "Date (DD/MM/YYYY)"
-            id: date_input
-            pos_hint: {'center_x': 0.5, 'center_y': 0.6}
-            size_hint: 0.8, 0.1
-
-        MDTextField:
-            hint_text: "Time (eg: 14:00)"
-            id: time_input
-            pos_hint: {'center_x': 0.5, 'center_y': 0.5}
-            size_hint: 0.8, 0.1
-
         MDRaisedButton:
             text: "Scan"
             font_name: "BPoppins"
             font_size: "26sp"
-            pos_hint: {'center_x': 0.5, 'center_y': 0.2}
-            size_hint: 0.5, 0.05
+            pos_hint: {'center_x': 0.5, 'center_y': 0.7}
+            size_hint: 0.5, 0.2
             md_bg_color: rgba(159, 90, 253, 255)
-            on_release:
+            on_release: app.scan_qr_code()
+            canvas.before:
+                Color:
+                    rgb: rgba(52, 0, 231, 255)
+                RoundedRectangle:
+                    size: self.size
+                    pos: self.pos
+                    radius: [5]
+
+        MDRaisedButton:
+            text: "Convert to Excel"
+            font_name: "BPoppins"
+            font_size: "26sp"
+            pos_hint: {'center_x': 0.5, 'center_y': 0.3}
+            size_hint: 0.5, 0.2
+            md_bg_color: rgba(159, 90, 253, 255)
+            on_release: app.xlsx()
             canvas.before:
                 Color:
                     rgb: rgba(52, 0, 231, 255)
