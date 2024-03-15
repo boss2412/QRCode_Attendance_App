@@ -54,7 +54,7 @@ def insert_into_db(name, college_id, email):
 
 
 def xlsx():
-    global attendance_file_counter
+
     # Connect to MySQL database
     conn = mysql.connector.connect(
         host="localhost",
@@ -74,10 +74,36 @@ def xlsx():
 
 
     # Write DataFrame to Excel file
-    output_file = f"attendance{attendance_file_counter}.xlsx"
+    output_file = f"attendance.xlsx"
     df.to_excel(output_file, index=False)
 
     print(f"Data has been exported to {output_file}")
+
+
+def truncate_table():
+
+    conn = mysql.connector.connect(
+        host="localhost",
+        user="root",
+        password="boss2412",
+        database="attendanceapp"
+    )
+
+    # Create a cursor object
+    cursor = conn.cursor()
+
+    # Execute the TRUNCATE TABLE statement
+    cursor.execute(f"TRUNCATE TABLE attendance")
+
+    # Commit the changes
+    conn.commit()
+
+    # Close the cursor and connection
+    cursor.close()
+    conn.close()
+
+    print(f"Table attendance has been truncated.")
+
 
 
 class TeacherScanner(Screen):
